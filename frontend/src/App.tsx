@@ -72,7 +72,7 @@ export function App() {
           <ChatInput />
         </main>
         {artifactOpen && selectedArtifact && (
-          <aside className="hidden lg:block w-[45%] max-w-2xl border-l border-gray-800 bg-gray-900 h-full overflow-hidden">
+          <aside className="w-[45%] min-w-[400px] max-w-2xl border-l border-gray-800 bg-gray-900 overflow-hidden">
             <ArtifactViewer
               artifact={selectedArtifact}
               onClose={() => setArtifactOpen(false)}
@@ -80,15 +80,6 @@ export function App() {
           </aside>
         )}
       </div>
-      {/* Mobile/tablet artifact overlay */}
-      {artifactOpen && selectedArtifact && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-gray-950 flex flex-col">
-          <ArtifactViewer
-            artifact={selectedArtifact}
-            onClose={() => setArtifactOpen(false)}
-          />
-        </div>
-      )}
     </div>
   );
 }

@@ -2,12 +2,13 @@ import React from 'react';
 import { useStore } from '../hooks/useStore';
 
 export function NewSessionButton() {
-  const { createSession, selectSession } = useStore();
+  const { createSession, selectSession, setArtifactOpen } = useStore();
   const [isCreating, setIsCreating] = React.useState(false);
 
   const handleCreate = async () => {
     setIsCreating(true);
     try {
+      setArtifactOpen(false);
       const session = await createSession();
       await selectSession(session.id);
     } finally {

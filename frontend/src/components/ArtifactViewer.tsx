@@ -12,10 +12,13 @@ interface ArtifactViewerProps {
 export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
   const [viewMode, setViewMode] = React.useState<'render' | 'source'>('render');
 
+  // 56px = app header, 52px = artifact header
+  const iframeHeight = 'calc(100vh - 108px)';
+
   return (
-    <div className="flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 56px)' }}>
-      {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900">
+    <div>
+      {/* Header - 52px */}
+      <div className="h-[52px] flex items-center justify-between px-4 border-b border-gray-800 bg-gray-900">
         <div className="flex items-center gap-2 min-w-0">
           <h3 className="text-sm font-medium text-white truncate">{artifact.title}</h3>
           <span className="px-1.5 py-0.5 text-[10px] font-medium bg-gray-800 text-gray-400 rounded capitalize flex-shrink-0">
@@ -53,29 +56,27 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
         </div>
       </div>
 
-      {/* Content - takes all remaining space */}
-      <div className="flex-1 overflow-hidden">
-        {viewMode === 'render' ? (
-          artifact.type === 'markdown' ? (
-            <div className="h-full overflow-auto p-6 prose prose-sm max-w-none text-gray-200">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                {artifact.content}
-              </ReactMarkdown>
-            </div>
-          ) : (
-            <iframe
-              className="w-full h-full border-0 bg-white"
-              sandbox="allow-scripts allow-same-origin"
-              srcDoc={artifact.content}
-              title={artifact.title}
-            />
-          )
+      {/* Content - explicit calc height */}
+      {viewMode === 'render' ? (
+        artifact.type === 'markdown' ? (
+          <div className="overflow-auto p-6 prose prose-sm max-w-none text-gray-200" style={{ height: iframeHeight }}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              {artifact.content}
+            </ReactMarkdown>
+          </div>
         ) : (
-          <pre className="h-full overflow-auto bg-gray-950 text-gray-300 p-4 text-xs font-mono">
-            <code>{artifact.content}</code>
-          </pre>
-        )}
-      </div>
+          <iframe
+            style={{ width: '100%', height: iframeHeight, border: 'none', display: 'block', background: 'white' }}
+            sandbox="allow-scripts allow-same-origin"
+            srcDoc={artifact.content}
+            title={artifact.title}
+          />
+        )
+      ) : (
+        <pre className="overflow-auto bg-gray-950 text-gray-300 p-4 text-xs font-mono m-0" style={{ height: iframeHeight }}>
+          <code>{artifact.content}</code>
+        </pre>
+      )}
     </div>
   );
 }

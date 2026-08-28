@@ -89,7 +89,7 @@ export const useStore = create<AppState>()(
       },
 
       createSession: async (title) => {
-        set({ isLoading: true });
+        set({ isLoading: true, artifactOpen: false, selectedArtifact: null, artifacts: [] });
         try {
           const session = await api.createSession({
             title,
@@ -104,7 +104,7 @@ export const useStore = create<AppState>()(
       },
 
       selectSession: async (id) => {
-        set({ isLoading: true, currentSessionId: id });
+        set({ isLoading: true, currentSessionId: id, artifactOpen: false, selectedArtifact: null, artifacts: [] });
         try {
           const sessionData = await api.getSession(id);
           set({ 
@@ -340,10 +340,6 @@ export const useStore = create<AppState>()(
         try {
           const artifacts = await api.getArtifacts(sessionId);
           set({ artifacts });
-          // Auto-open the most recent artifact if any exist
-          if (artifacts.length > 0) {
-            set({ selectedArtifact: artifacts[artifacts.length - 1], artifactOpen: true });
-          }
         } catch (error) {
           console.error('Failed to fetch artifacts:', error);
         }
