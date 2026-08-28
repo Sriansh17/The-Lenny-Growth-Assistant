@@ -3,7 +3,7 @@ import { useStore } from '../hooks/useStore';
 import { MessageBubble } from './MessageBubble';
 
 export function MessageList() {
-  const { messages, isStreaming, currentSessionId } = useStore();
+  const { messages, isStreaming, currentSessionId, artifacts, setSelectedArtifact, setArtifactOpen } = useStore();
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -54,6 +54,27 @@ export function MessageList() {
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
             <span className="text-xs">Thinking...</span>
+          </div>
+        )}
+
+        {artifacts.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {artifacts.map((artifact) => (
+              <button
+                key={artifact.id}
+                onClick={() => { setSelectedArtifact(artifact); setArtifactOpen(true); }}
+                className="w-full text-left px-4 py-3 bg-emerald-900/30 border border-emerald-700/50 rounded-xl hover:bg-emerald-900/50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="text-sm font-medium text-emerald-300">{artifact.title}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-emerald-800/50 rounded text-emerald-400 uppercase">{artifact.type}</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Click to view rendered artifact</p>
+              </button>
+            ))}
           </div>
         )}
 
