@@ -287,6 +287,13 @@ export const useStore = create<AppState>()(
                           : m
                       ),
                     }));
+                  } else if (event.type === 'artifact') {
+                    const artifact = event.artifact;
+                    set((state) => ({
+                      artifacts: [...state.artifacts, artifact],
+                      selectedArtifact: artifact,
+                      artifactOpen: true,
+                    }));
                   }
                 } catch {
                   // Skip malformed JSON lines

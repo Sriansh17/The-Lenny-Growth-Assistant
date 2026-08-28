@@ -246,7 +246,7 @@ async def chat_stream(chat_request: ChatRequest, db: AsyncSession = Depends(get_
     from fastapi.responses import StreamingResponse
     from app.services.rag import rag_service
     from app.services.llm import get_llm_provider
-    from app.models.session import MessageRole
+    from app.models.session import MessageRole, ArtifactType
     from app.core.config import settings
     import json
 
@@ -266,9 +266,61 @@ async def chat_stream(chat_request: ChatRequest, db: AsyncSession = Depends(get_
     await agent.add_message(session_id, MessageRole.USER, chat_request.message)
 
     async def event_generator():
+        import json
+        from app.services.rag import rag_service
+        from app.services.llm import get_llm_provider
+        from app.models.session import MessageRole as MR
+        from app.core.config import settings
+        from app.skills.base import SkillRegistry
+
         # Send session_id first
         yield f"data: {json.dumps({'type': 'session', 'session_id': str(session_id)})}\n\n"
 
+        # Check for skill trigger
+        skill = None
+        if chat_request.use_skill:
+            skill = SkillRegistry.get(chat_request.use_skill)
+        else:
+            skill = SkillRegistry.find_triggered(chat_request.message)
+
+        if skill:
+            # Execute skill (non-streaming, emit result at once)
+            try:
+                messages = await agent.get_messages(session_id, limit=20)
+                conversation_history = [
+                    {"role": m.role if isinstance(m.role, str) else m.role.value, "content": m.content} for m in messages
+                ]
+                skill_result = await skill.execute(chat_request.message, conversation_history[:-1])
+
+                await agent.add_message(
+                    session_id, MR.ASSISTANT, skill_result.content,
+                    citations=skill_result.citations,
+                )
+
+                # Send content as single chunk
+                yield f"data: {json.dumps({'type': 'chunk', 'content': skill_result.content})}\n\n"
+
+                if skill_result.citations:
+                    yield f"data: {json.dumps({'type': 'citations', 'citations': skill_result.citations})}\n\n"
+
+                # Handle artifacts
+                if skill_result.artifacts:
+                    for artifact_data in skill_result.artifacts:
+                        artifact = await agent.save_artifact(
+                            session_id,
+                            ArtifactType(artifact_data["type"]),
+                            artifact_data["title"],
+                            artifact_data["content"],
+                        )
+                        yield f"data: {json.dumps({'type': 'artifact', 'artifact': {'id': str(artifact.id), 'type': artifact_data['type'], 'title': artifact_data['title'], 'content': artifact_data['content'], 'sanitized_content': artifact.sanitized_content}})}\n\n"
+
+                yield f"data: {json.dumps({'type': 'done', 'session_id': str(session_id)})}\n\n"
+            except Exception as e:
+                logger.error("skill_stream_error", error=str(e))
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+            return
+
+        # Standard RAG streaming path
         # Get conversation history
         messages = await agent.get_messages(session_id, limit=20)
         conversation_history = [
