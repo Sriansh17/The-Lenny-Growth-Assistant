@@ -4,7 +4,6 @@ import { useStore } from '../hooks/useStore';
 const PROVIDERS = [
   { id: 'ollama', name: 'Ollama (Local)', models: ['llama3.1:8b', 'llama3.1:70b', 'mistral:7b'] },
   { id: 'anthropic', name: 'Anthropic', models: ['claude-sonnet-4-20250514', 'claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307'] },
-  { id: 'openai', name: 'OpenAI', models: ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'] },
 ];
 
 export function ModelSelector() {
