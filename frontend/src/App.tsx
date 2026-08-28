@@ -72,7 +72,7 @@ export function App() {
           <ChatInput />
         </main>
         {artifactOpen && selectedArtifact && (
-          <aside className="hidden lg:flex w-[45%] max-w-2xl border-l border-gray-800 bg-gray-900 flex-col overflow-hidden">
+          <aside className="hidden lg:block w-[45%] max-w-2xl border-l border-gray-800 bg-gray-900 h-full overflow-hidden">
             <ArtifactViewer
               artifact={selectedArtifact}
               onClose={() => setArtifactOpen(false)}

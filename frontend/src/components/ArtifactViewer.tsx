@@ -13,7 +13,7 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
   const [viewMode, setViewMode] = React.useState<'render' | 'source'>('render');
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 56px)' }}>
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900">
         <div className="flex items-center gap-2 min-w-0">
