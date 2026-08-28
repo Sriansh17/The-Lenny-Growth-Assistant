@@ -13,7 +13,7 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
   const [viewMode, setViewMode] = React.useState<'render' | 'source'>('render');
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 56px)' }}>
+    <div className="flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 56px)' }}>
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900">
         <div className="flex items-center gap-2 min-w-0">
@@ -54,24 +54,24 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
       </div>
 
       {/* Content - takes all remaining space */}
-      <div className="flex-1 relative min-h-0">
+      <div className="flex-1 overflow-hidden">
         {viewMode === 'render' ? (
           artifact.type === 'markdown' ? (
-            <div className="absolute inset-0 overflow-auto p-6 prose prose-sm max-w-none text-gray-200">
+            <div className="h-full overflow-auto p-6 prose prose-sm max-w-none text-gray-200">
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {artifact.content}
               </ReactMarkdown>
             </div>
           ) : (
             <iframe
-              className="absolute inset-0 w-full h-full border-0 bg-white"
+              className="w-full h-full border-0 bg-white"
               sandbox="allow-scripts allow-same-origin"
               srcDoc={artifact.content}
               title={artifact.title}
             />
           )
         ) : (
-          <pre className="absolute inset-0 overflow-auto bg-gray-950 text-gray-300 p-4 text-xs font-mono">
+          <pre className="h-full overflow-auto bg-gray-950 text-gray-300 p-4 text-xs font-mono">
             <code>{artifact.content}</code>
           </pre>
         )}
