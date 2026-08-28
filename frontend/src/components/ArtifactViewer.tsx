@@ -27,7 +27,7 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
       <iframe
         className="w-full flex-1 border-0 bg-white rounded-lg"
         sandbox="allow-scripts allow-same-origin"
-        srcDoc={artifact.sanitized_content || artifact.content}
+        srcDoc={artifact.content}
         title={artifact.title}
       />
     );

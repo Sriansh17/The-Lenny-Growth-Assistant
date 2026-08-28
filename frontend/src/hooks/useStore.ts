@@ -340,6 +340,10 @@ export const useStore = create<AppState>()(
         try {
           const artifacts = await api.getArtifacts(sessionId);
           set({ artifacts });
+          // Auto-open the most recent artifact if any exist
+          if (artifacts.length > 0) {
+            set({ selectedArtifact: artifacts[artifacts.length - 1], artifactOpen: true });
+          }
         } catch (error) {
           console.error('Failed to fetch artifacts:', error);
         }
