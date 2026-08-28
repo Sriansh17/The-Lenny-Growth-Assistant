@@ -1,0 +1,79 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: lenny_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lenny_assistant
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Ollama runs locally on the host (already started).
+  # To use a containerized Ollama instead, uncomment this block and
+  # change OLLAMA_BASE_URL below back to http://ollama:11434
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: lenny_ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   healthcheck:
+  #     test: ["CMD", "ollama", "list"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lenny_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/lenny_assistant
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - LLM_PROVIDER=ollama
+      - OLLAMA_MODEL=llama3.1:8b
+      - VECTOR_DB_PATH=/app/data/chroma
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - SECRET_KEY=dev-secret-change-in-production-minimum-32-characters-long
+      - CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - CLOUD_MODEL=${CLOUD_MODEL:-claude-sonnet-4-20250514}
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lenny_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

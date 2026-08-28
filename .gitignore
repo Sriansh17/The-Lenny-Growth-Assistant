@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Backend
+backend/.env
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.frontend/dist/
+.frontend/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.docker/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data
+data/transcripts/*.json
+!data/transcripts/.gitkeep
+!data/transcripts/episode-*.json
+
+# Raw transcripts repo (cloned during download)
+data/_raw_transcripts_repo/
+
+# Vector DB
+data/chroma/
+
+# Ollama
+ollama_data/
+
+# IDE specific
+.vscode/settings.json
+.idea/workspace.xml
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
