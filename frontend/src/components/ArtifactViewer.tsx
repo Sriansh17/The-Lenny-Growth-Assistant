@@ -25,7 +25,8 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
 
     return (
       <iframe
-        className="w-full flex-1 border-0 bg-white rounded-lg"
+        className="w-full h-full border-0 bg-white"
+        style={{ minHeight: '100%' }}
         sandbox="allow-scripts allow-same-origin"
         srcDoc={artifact.content}
         title={artifact.title}
@@ -81,7 +82,7 @@ export function ArtifactViewer({ artifact, onClose }: ArtifactViewerProps) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {viewMode === 'render' ? renderArtifact() : renderSource()}
       </div>
     </div>
