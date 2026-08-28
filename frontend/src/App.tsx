@@ -80,6 +80,15 @@ export function App() {
           </aside>
         )}
       </div>
+      {/* Mobile/tablet artifact overlay */}
+      {artifactOpen && selectedArtifact && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-gray-950 flex flex-col">
+          <ArtifactViewer
+            artifact={selectedArtifact}
+            onClose={() => setArtifactOpen(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }

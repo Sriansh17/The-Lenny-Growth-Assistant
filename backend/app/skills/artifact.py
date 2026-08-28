@@ -10,7 +10,10 @@ class ArtifactSkill(BaseSkill):
     trigger_keywords = [
         "create artifact", "generate artifact", "make artifact",
         "create markdown", "generate html", "make document",
-        "render", "create file", "generate file"
+        "create html", "create an html", "create a markdown",
+        "generate markdown", "generate a", "render",
+        "create file", "generate file", "create a template",
+        "create an artifact", "make a template", "build a template"
     ]
 
     def get_system_prompt(self) -> str:
